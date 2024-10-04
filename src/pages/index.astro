@@ -9,22 +9,26 @@ const SECTION_PRODUCTS = [
     idTag: null
   },
   {
-    title: 'Productos Cisco',
-    idTag: 'ptag_01J8TC3Y2J57PN578TQ4491QF8'
+    title: 'Productos Tinta',
+    idTag: 'pcol_01HZWJ33XX6GFR4S6B5BJ68KCB'
   },
   {
-    title: 'Productos HPE',
-    idTag: 'ptag_01J8TC3Y812R1JXCJB3YHFP8Q4'
+    title: 'Productos Toner',
+    idTag: 'pcol_01HZWJ41NNQ0FYW42R31GCBMSV'
+  },
+  {
+    title: 'Productos Partes y Piezas de computadora',
+    idTag: 'pcol_01J8EHT05SQ5MHN07PZMQ0HFPZ'
   }
 ];
 ---
 
 <Layout
-  title="Servidor Peru - NET | Alquiler y Venta de Servidor Switch Computadora | Importador y Distribuidor"
+  title="EF SYSTEMAS EIRL | La mejor tienda en linea de suministros de impresión y computo"
 >
   {
     SECTION_PRODUCTS.map(({ title, idTag }) => (
-      <Products title={title} idTag={idTag} />
+      <Products title={title} collectionId={idTag} />
     ))
   }
   <SliderCategories />

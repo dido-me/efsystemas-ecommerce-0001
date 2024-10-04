@@ -4,20 +4,20 @@ import { medusa } from '@src/utils/medusa.util'
 
 interface Props {
   title: string;
-  idTag: string | null;
+  collectionId: string | null;
 }
 
 interface ProductListParams {
   limit: number;
-  tags?: string[];
+  collection_id?: string[];
 }
 
-const { idTag, title } = Astro.props as Props
+const { collectionId, title } = Astro.props as Props
 
 const params: ProductListParams = { limit: 10 }
 
-if (idTag !== null) {
-  params.tags = [idTag]
+if (collectionId !== null) {
+  params.collection_id = [collectionId]
 }
 
 const products = await medusa.products
@@ -29,7 +29,6 @@ const products = await medusa.products
     console.error('Error retrieving products:', error)
     return []
   });
-
 ---
 
 <div
