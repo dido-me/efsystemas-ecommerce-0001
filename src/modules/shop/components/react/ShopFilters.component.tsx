@@ -30,19 +30,22 @@ function Hit ({ hit }: HitProps) {
 
       {/* Información del producto */}
       <a href={`/product/${hit.objectID}/${hit.handle}`} className="flex flex-col justify-between w-full overflow-hidden">
-        <h1 className="text-base lg:text-lg font-bold text-commerce-950 hover:text-blue-500 transition-all duration-200 truncate">
+        <h1
+          className="text-base lg:text-lg font-bold text-commerce-950 hover:text-blue-500 transition-all duration-200 break-words whitespace-normal"
+          title={hit.title} // Tooltip opcional para ver el título completo
+        >
           <Highlight hit={hit} attribute="title" />
         </h1>
 
-        <p className="text-xs sm:text-sm lg:text-base font-medium text-gray-500 mt-1 sm:mt-0 truncate">
+        <p className="text-xs sm:text-sm lg:text-base font-medium text-gray-500 mt-1 sm:mt-0">
           Id Producto: <span>{hit.objectID}</span>
         </p>
 
         <div className="mt-2 sm:mt-4">
-          <p className="text-xs sm:text-sm text-gray-400 truncate">
+          <p className="text-xs sm:text-sm text-gray-400">
             <span className="font-medium text-gray-600">Marca:</span> {hit.brand}
           </p>
-          <p className="text-xs sm:text-sm text-gray-400 truncate">
+          <p className="text-xs sm:text-sm text-gray-400">
             <span className="font-medium text-gray-600">Categoría:</span> {hit.category}
           </p>
         </div>
@@ -60,13 +63,22 @@ export function ShopFilters () {
             <h2 className="text-lg font-semibold mb-4">Marcas</h2>
             <RefinementList
               attribute="brand"
+              showMore={true}
               classNames={{
                 list: 'flex flex-col gap-2 py-2',
                 item: 'cursor-pointer flex items-center justify-between gap-4 p-2 rounded hover:bg-gray-100 transition-all',
                 label: 'text-sm sm:text-base font-medium text-gray-600',
                 checkbox: 'form-checkbox h-5 w-5 text-blue-600 transition duration-150 ease-in-out mr-3',
-                count: 'text-xs text-gray-500 bg-gray-200 rounded-full px-2 py-0.5'
+                count: 'text-xs text-gray-500 bg-gray-200 rounded-full px-2 py-0.5',
+                showMore: 'px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all cursor-pointer mt-2'
               }}
+
+              translations={{
+                showMoreButtonText ({ isShowingMore }) {
+                  return isShowingMore ? 'Ver menos Marcas ' : 'Ver mas Marcas'
+                }
+              }}
+
             />
           </div>
 
@@ -81,7 +93,14 @@ export function ShopFilters () {
                 selectedItem: 'bg-blue-200 border-blue-400 text-blue-800 hover:bg-blue-300 hover:border-blue-500',
                 label: 'font-medium',
                 checkbox: 'hidden',
-                count: 'ml-2 text-xs sm:text-sm text-gray-500 font-normal'
+                count: 'ml-2 text-xs sm:text-sm text-gray-500 font-normal',
+                showMore: 'px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all cursor-pointer mt-2'
+              }}
+              showMore={true}
+              translations={{
+                showMoreButtonText ({ isShowingMore }) {
+                  return isShowingMore ? 'Ver menos Categorías ' : 'Ver mas Categorías'
+                }
               }}
             />
           </div>
