@@ -1,0 +1,67 @@
+---
+import CardProduct from '@src/components/CardProduct.component.astro'
+import { medusa } from '@src/utils/medusa.util'
+
+interface Props {
+  title: string;
+  idTag: string | null;
+}
+
+interface ProductListParams {
+  limit: number;
+  tags?: string[];
+}
+
+const { idTag, title } = Astro.props as Props
+
+const params: ProductListParams = { limit: 10 }
+
+if (idTag !== null) {
+  params.tags = [idTag]
+}
+
+const products = await medusa.products
+  .list(params)
+  .then(({ products }) => {
+    return products
+  })
+  .catch((error) => {
+    console.error('Error retrieving products:', error)
+    return []
+  });
+
+---
+
+<div
+  class="my-14 max-w-screen-xl mx-4 md:mx-auto text-center md:text-left flex flex-col gap-10"
+>
+  <header class="flex flex-wrap justify-between">
+    <h3 class="text-2xl font-semibold text-commerce-950">
+      {title}
+    </h3>
+    <a
+      href="/shop"
+      class="bg-commerce-500 text-white font-semibold text-sm px-4 py-2 rounded-lg hover:bg-commerce-700 transition-colors duration-300"
+    >
+      Ver mas
+    </a>
+  </header>
+  <main
+    class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] grid-rows-[masonry] auto-rows-max"
+  >
+    {
+      products.map(
+        ({ id, title, description, variants, handle, thumbnail }) => (
+          <CardProduct
+            idProduct={id ?? ''}
+            title={title ?? ''}
+            description={description ?? ''}
+            handle={handle ?? ''}
+            imageProduct={thumbnail ?? ''}
+            price={variants?.[0].prices[0]?.amount ?? 0}
+          />
+        )
+      )
+    }
+  </main>
+</div>

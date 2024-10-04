@@ -1,0 +1,32 @@
+---
+import Layout from '@src/layouts/Layout.astro'
+import Products from '@src/modules/home/sections/Products.section.astro'
+import SliderCategories from '@src/modules/home/sections/SliderCategories.section.astro'
+
+const SECTION_PRODUCTS = [
+  {
+    title: 'Productos Recientes',
+    idTag: null
+  },
+  {
+    title: 'Productos Cisco',
+    idTag: 'ptag_01J8TC3Y2J57PN578TQ4491QF8'
+  },
+  {
+    title: 'Productos HPE',
+    idTag: 'ptag_01J8TC3Y812R1JXCJB3YHFP8Q4'
+  }
+];
+---
+
+<Layout
+  title="Servidor Peru - NET | Alquiler y Venta de Servidor Switch Computadora | Importador y Distribuidor"
+>
+  {
+    SECTION_PRODUCTS.map(({ title, idTag }) => (
+      <Products title={title} idTag={idTag} />
+    ))
+  }
+  <SliderCategories />
+  <!-- <BigCards /> -->
+</Layout>

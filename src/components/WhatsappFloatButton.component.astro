@@ -1,0 +1,21 @@
+---
+import { numberContact } from '@src/consts/numberContact'
+import Icon from './Icon.component.astro';
+---
+
+<a
+  href={`https://wa.me/51${numberContact}?text=Hola, estoy interesado en sus servicios`}
+  target="_blank"
+  class="fixed bottom-4 right-4 bg-commerce-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-commerce-900 transition z-50 group"
+>
+  <Icon name="whatsapp" width={32} height={32} />
+  <div
+    class="absolute bottom-[50%] right-[calc(100%+0.5rem)] -translate-y-[50%] hidden group-hover:block w-auto"
+  >
+    <div
+      class="left-full bottom-0 rounded bg-black px-4 py-1 text-xs text-white whitespace-nowrap"
+    >
+      Contáctanos por Whatsapp
+    </div>
+  </div>
+</a>

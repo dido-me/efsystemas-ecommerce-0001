@@ -1,0 +1,68 @@
+---
+import Icon from './Icon.component.astro';
+---
+
+<div class="bg-commerce-950">
+  <div class="max-w-screen-xl mx-auto text-white py-10 px-4">
+    <!-- Contenedor principal con flex y responsive -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-10">
+      <!-- Texto central -->
+      <div class="text-center md:text-left">
+        <h3 class="text-3xl mb-3">Descubre lo último en tecnología</h3>
+        <p>Potencia tu día a día con los mejores.</p>
+      </div>
+
+      <!-- Botones y redes sociales -->
+      <div class="flex flex-col gap-5 items-center md:items-end">
+        <button class="flex justify-center">
+          <div
+            class="flex items-center border border-commerce-400 rounded-lg px-4 py-2 w-52 mx-2 bg-commerce-950 hover:bg-commerce-500 hover:border-commerce-600 transition-colors duration-300"
+          >
+            <Icon name="bookIcon" />
+            <div class="text-left ml-3">
+              <p class="text-xs text-gray-200">Libro de</p>
+              <p class="text-sm md:text-base">Reclamaciones</p>
+            </div>
+          </div>
+        </button>
+        <!-- Redes sociales -->
+        <div class="flex gap-5 items-center">
+          <p>Síguenos en:</p>
+          <a
+            href=""
+            class="hover:bg-commerce-500 rounded-full p-2 transition-colors duration-300"
+          >
+            <Icon name="facebook" />
+          </a>
+          <a
+            href=""
+            class="hover:bg-commerce-500 rounded-full p-2 transition-colors duration-300"
+          >
+            <Icon name="instagram" />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie de página -->
+    <div
+      class="mt-10 flex flex-col md:flex-row md:justify-between items-center text-sm text-gray-400"
+    >
+      <p class="order-2 md:order-1 mt-8 md:mt-0 text-center md:text-left">
+        &copy; Diseñado por
+        <a
+          href="https://wa.me/51930103539?text=Estoy%20interesado%20en%20sus%20servicios"
+          class="text-blue-500 font-semibold hover:text-blue-700"
+          target="_blank"
+        >
+          Dido Concept
+        </a>
+      </p>
+      <div class="order-1 md:order-2 flex justify-center md:justify-end gap-4">
+        <span class="px-2">Nosotros</span>
+        <span class="px-2 border-l">Contáctanos</span>
+        <span class="px-2 border-l">Políticas de privacidad</span>
+      </div>
+    </div>
+  </div>
+</div>

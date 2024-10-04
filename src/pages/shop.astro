@@ -1,0 +1,10 @@
+---
+import Layout from '@src/layouts/Layout.astro'
+import { ShopFilters } from '@src/modules/shop/components/react/ShopFilters.component';
+---
+
+<Layout
+  title="Servidor Peru - NET | Alquiler y Venta de Servidor Switch Computadora | Importador y Distribuidor"
+>
+  <ShopFilters client:only="react" />
+</Layout>

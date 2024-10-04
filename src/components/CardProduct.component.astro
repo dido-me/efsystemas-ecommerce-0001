@@ -1,0 +1,73 @@
+---
+import { ProductButton } from '@src/modules/producto/components/react/ProductButton.component'
+
+export interface Props {
+  title: string;
+  description: string;
+  price: number;
+  priceAfter?: number;
+  handle: string;
+  idProduct: string;
+  imageProduct: string;
+}
+
+const {
+  description,
+  handle,
+  idProduct,
+  imageProduct,
+  price,
+  priceAfter,
+  title
+} = Astro.props as Props
+
+const priceFormat = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD'
+}).format(price / 100)
+
+const priceAfterFormat = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD'
+}).format(priceAfter ?? 0 / 100);
+---
+
+<article
+  class="w-full max-w-sm mx-auto bg-commerce-50 shadow-md rounded-lg overflow-hidden border border-gray-400 hover:border-commerce-500 transition duration-75 ease-in-out hover:transition hover:duration-500 hover:shadow-md flex flex-col justify-between"
+>
+  <div class="flex-grow">
+    <div class="aspect-square relative overflow-hidden rounded-md">
+      <a href={`/product/${idProduct}/${handle}`}>
+        <img
+          src={imageProduct}
+          alt="Product image"
+          class="object-cover w-full h-full"
+        />
+      </a>
+    </div>
+    <div class="p-6">
+      <a
+        href={`/product/${idProduct}/${handle}`}
+        class="text-base font-bold text-commerce-950 hover:text-commerce-500"
+      >
+        {title}
+      </a>
+      <p class="mt-2 text-xl text-commerce-950">
+        {description.length > 200 ? `${description.substring(0, 50)}...` : description}
+      </p>
+    </div>
+  </div>
+  <footer class="px-6 pb-7 flex flex-col gap-5 items-center">
+    <div>
+      {
+        priceAfter && (
+          <p class="text-lg font-medium m-0 text-gray-500 line-through">
+            {priceAfterFormat}
+          </p>
+        )
+      }
+      <p class="text-xl font-semibold m-0 text-commerce-950">{priceFormat}</p>
+    </div>
+    <ProductButton {...Astro.props} client:visible />
+  </footer>
+</article>

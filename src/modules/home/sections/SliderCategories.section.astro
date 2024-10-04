@@ -1,0 +1,133 @@
+---
+import { medusa } from '@src/utils/medusa.util'
+
+const catergories = await medusa.collections
+  .list({ limit: 100 })
+  .then(({ collections }) => {
+    return collections
+  })
+  .catch((error) => {
+    console.error('Error retrieving categories:', error)
+    return []
+  });
+---
+
+<section
+  class="my-14 max-w-screen-xl mx-4 md:mx-auto text-center md:text-left flex flex-col gap-5"
+>
+  <header class="flex justify-between">
+    <h3 class="text-2xl font-semibold text-commerce-950">Categorias</h3>
+    <div class="swiper-navigation relative text-xs">
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev !right-0 !left-auto mx-12"></div>
+    </div>
+  </header>
+  <section class="w-full">
+    <div class="swiper categorySwiper">
+      <div class="swiper-wrapper">
+        {
+          catergories.map((cat) => (
+            <div class="swiper-slide">
+              <div class="relative rounded-lg break-words border bg-commerce-50 border-gray-400 transition duration-75 hover:transition hover:duration-500 ease-in-out hover:border-commerce-500 hover:shadow-md">
+                <a href="/shop">
+                  <div class="py-8 text-center">
+                    <div class="text-commerce-95 font-bold">{cat.title}</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</section>
+
+<script>
+import Swiper from 'swiper'
+import { Autoplay, Navigation } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+
+const categorySwiper = new Swiper('.categorySwiper', {
+  modules: [Autoplay, Navigation],
+  navigation: {
+    prevEl: '.swiper-button-prev',
+    nextEl: '.swiper-button-next'
+  },
+  spaceBetween: 20,
+  slidesPerView: 6,
+  breakpoints: {
+    320: {
+      slidesPerView: 1
+    },
+    480: {
+      slidesPerView: 2,
+      spaceBetween: 10
+    },
+    768: {
+      slidesPerView: 3,
+      spaceBetween: 15
+    },
+    1024: {
+      slidesPerView: 4,
+      spaceBetween: 20
+    },
+    1280: {
+      slidesPerView: 5,
+      spaceBetween: 20
+    },
+    1440: {
+      slidesPerView: 6,
+      spaceBetween: 20
+    }
+  },
+  autoplay: {
+    delay: 20000
+  }
+})
+
+categorySwiper.init()
+</script>
+
+<style>
+  .swiper {
+    width: 100%;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .swiper-slide div {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .categorySwiper {
+    box-sizing: border-box;
+    padding: 10px 0;
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 30px;
+    height: 30px;
+    color: #fff;
+    background: #0062ff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  .swiper-button-next,
+  .swiper-button-prev {
+    &:after {
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+    }
+  }
+</style>

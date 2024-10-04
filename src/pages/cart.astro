@@ -1,0 +1,42 @@
+---
+import Layout from '@src/layouts/Layout.astro'
+import CheckOutButton from '@src/modules/cart/components/CheckOutButton.component'
+import { ListProduct } from '@src/modules/cart/sections/ListProduct.section';
+---
+
+<Layout
+  title="Servidor Peru - NET | Alquiler y Venta de Servidor Switch Computadora | Importador y Distribuidor"
+>
+  <section
+    class="my-14 max-w-screen-xl mx-4 md:mx-auto text-center md:text-left flex flex-col gap-5"
+  >
+    <div class="w-full mb-6">
+      <h1 class="text-2xl font-bold text-commerce-950">Carrito de compra</h1>
+      <p class="text-sm">Comprando en Peru Servidor</p>
+    </div>
+    <div class="flex flex-wrap lg:flex-nowrap lg:gap-x-12 gap-y-6">
+
+      <div class="w-full lg:w-2/3">
+        <div class="flex flex-col gap-5">
+          <ul class="list-none">
+            <ListProduct client:visible />
+          </ul>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-1/3">
+        <div class="relative card min-w-0">
+          <div class="card-body flex flex-col gap-4">
+            <h2 class="text-xl font-bold text-commerce-950">Resumen</h2>
+
+            <div>
+              <div class="grid">
+                <CheckOutButton client:visible />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

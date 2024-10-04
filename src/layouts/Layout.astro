@@ -1,0 +1,51 @@
+---
+import Footer from '@src/components/Footer.component.astro'
+import Header from '@src/components/Header.component.astro'
+import { CartDrawer } from '@src/components/react'
+import '@fontsource-variable/onest'
+import ContactStrip from '@src/components/ContactStrip.component.astro'
+import WhatsappFloatButton from '@src/components/WhatsappFloatButton.component.astro'
+import GoogleAnalytics from '@src/components/GoogleAnalytics.component.astro'
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props as Props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <GoogleAnalytics />
+  </head>
+  <body>
+    <Header />
+    <CartDrawer client:only="react" />
+    <ContactStrip />
+    <main class="mx-5">
+      <slot />
+    </main>
+    <ContactStrip />
+    <Footer />
+    <WhatsappFloatButton />
+  </body>
+</html>
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Onest Variable", sans-serif;
+    background: #e9f7ff;
+    overflow-x: hidden;
+    padding-top: 8rem;
+  }
+</style>
