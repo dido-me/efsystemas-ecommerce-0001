@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro'
 export const prerender = true
 
 export const GET: APIRoute = () => {
-  const site = import.meta.env.SITE as string | undefined
+  const site = import.meta.env.SITE || ' '
   const siteUrl = site ? new URL(site) : undefined
   const sitemapEnabled = false
   const sitemapUrl =
