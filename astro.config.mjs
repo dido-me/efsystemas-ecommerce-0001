@@ -19,5 +19,5 @@ export default defineConfig({
         forward: ['dataLayer.push']
       }
     })],
-  site: import.meta.env.SITE || ''
+  site: import.meta.env.SITE || 'https://example.com'
 })
