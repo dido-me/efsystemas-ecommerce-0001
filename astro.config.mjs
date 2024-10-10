@@ -19,5 +19,5 @@ export default defineConfig({
         forward: ['dataLayer.push']
       }
     })],
-  site: 'https://efsystemas.net'
+  site: 'https://www.efsystemas.net'
 })
