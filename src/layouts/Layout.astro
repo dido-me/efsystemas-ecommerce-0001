@@ -1,11 +1,11 @@
 ---
-import Footer from '@src/components/Footer.component.astro'
-import Header from '@src/components/Header.component.astro'
-import { CartDrawer } from '@src/components/react'
 import '@fontsource-variable/onest'
 import ContactStrip from '@src/components/ContactStrip.component.astro'
-import WhatsappFloatButton from '@src/components/WhatsappFloatButton.component.astro'
+import Footer from '@src/components/Footer.component.astro'
 import GoogleAnalytics from '@src/components/GoogleAnalytics.component.astro'
+import Header from '@src/components/Header.component.astro'
+import { CartDrawer } from '@src/components/react'
+import WhatsappFloatButton from '@src/components/WhatsappFloatButton.component.astro'
 import { keywords } from '@src/consts/keyWords.const'
 
 interface Props {
@@ -14,18 +14,17 @@ interface Props {
 
 const { title } = Astro.props as Props
 
-const description = `Encuentra los mejores suministros de computadora y tecnología, con un enfoque en productos HP como tintas, tóneres, impresoras y más. Otros productos incluyen laptops, componentes de PC y accesorios: ${keywords}.`
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={`Encuentra los mejores suministros de computadora y tecnología, con un enfoque en productos HP como tintas, tóneres, impresoras y más. Otros productos incluyen laptops, componentes de PC y accesorios: ${keywords}.`} />
     <title>{title}</title>
     <GoogleAnalytics />
   </head>
