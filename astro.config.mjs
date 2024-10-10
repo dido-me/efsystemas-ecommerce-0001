@@ -5,6 +5,7 @@ import tailwind from '@astrojs/tailwind'
 import react from '@astrojs/react'
 import vercel from '@astrojs/vercel/serverless'
 import partytown from '@astrojs/partytown'
+import sitemap from '@astrojs/sitemap'
 
 export default defineConfig({
   output: 'server',
@@ -12,10 +13,11 @@ export default defineConfig({
   integrations: [
     tailwind(),
     react(),
+    sitemap(),
     partytown({
       config: {
         forward: ['dataLayer.push']
       }
     })],
-  site: 'https://www.servidorperu.net'
+  site: 'https://efsystemas.net'
 })
