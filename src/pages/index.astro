@@ -1,16 +1,16 @@
 ---
 import Layout from '@src/layouts/Layout.astro'
 import Products from '@src/modules/home/sections/Products.section.astro'
-import SliderCategories from '@src/modules/home/sections/SliderCategories.section.astro'
+// import SliderCategories from '@src/modules/home/sections/SliderCategories.section.astro'
 
 const SECTION_PRODUCTS = [
   {
     title: 'Productos Tinta',
-    idTag: 'pcol_01HZWJ33XX6GFR4S6B5BJ68KCB'
+    idTag: 'Tinta'
   },
   {
     title: 'Productos Toner',
-    idTag: 'pcol_01HZWJ41NNQ0FYW42R31GCBMSV'
+    idTag: 'Toner'
   },
   {
     title: 'Productos Recientes',
@@ -18,7 +18,7 @@ const SECTION_PRODUCTS = [
   },
   {
     title: 'Productos Partes y Piezas de computadora',
-    idTag: 'pcol_01J8EHT05SQ5MHN07PZMQ0HFPZ'
+    idTag: 'PARTES Y PIEZAS DE COMPUTADORA'
   }
 ];
 ---
@@ -31,6 +31,6 @@ const SECTION_PRODUCTS = [
       <Products title={title} collectionId={idTag} />
     ))
   }
-  <SliderCategories />
+  <!-- <SliderCategories /> -->
   <!-- <BigCards /> -->
 </Layout>

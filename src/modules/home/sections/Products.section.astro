@@ -1,34 +1,37 @@
 ---
 import CardProduct from '@src/components/CardProduct.component.astro'
-import { medusa } from '@src/utils/medusa.util'
+import fetchApi from '@src/utils/strapi'
+import type { ProductDTO } from '@src/interfaces/ProductoDto'
 
 interface Props {
   title: string;
   collectionId: string | null;
 }
 
-interface ProductListParams {
-  limit: number;
-  collection_id?: string[];
-}
-
 const { collectionId, title } = Astro.props as Props
 
-const params: ProductListParams = { limit: 10 }
-
-if (collectionId !== null) {
-  params.collection_id = [collectionId]
+// Build query parameters for Strapi API
+const query: Record<string, string> = {
+  'populate[0]': 'categorias',
+  'populate[1]': 'marca',
+  'populate[2]': 'imagenes',
+  'sort[0]': 'createdAt:desc',
+  'pagination[limit]': '10'
 }
 
-const products = await medusa.products
-  .list(params)
-  .then(({ products }) => {
-    return products
-  })
-  .catch((error) => {
-    console.error('Error retrieving products:', error)
-    return []
-  });
+// Add category filter only if collectionId is provided
+if (collectionId !== null) {
+  query['filters[categorias][nombre][$eq]'] = collectionId
+}
+
+const products = await fetchApi<ProductDTO[]>({
+  endpoint: 'productos',
+  query,
+  wrappedByKey: 'data'
+}).catch((error) => {
+  console.error('Error retrieving products:', error)
+  return []
+});
 ---
 
 <div
@@ -49,18 +52,16 @@ const products = await medusa.products
     class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] grid-rows-[masonry] auto-rows-max"
   >
     {
-      products.map(
-        ({ id, title, description, variants, handle, thumbnail }) => (
-          <CardProduct
-            idProduct={id ?? ''}
-            title={title ?? ''}
-            description={description ?? ''}
-            handle={handle ?? ''}
-            imageProduct={thumbnail ?? ''}
-            price={variants?.[0].prices[0]?.amount ?? 0}
-          />
-        )
-      )
+      products.map((product) => (
+        <CardProduct
+          idProduct={product.documentId ?? ''}
+          title={product.nombre ?? ''}
+          description={product.descripcion_corta ?? ''}
+          handle={product.slug ?? ''}
+          imageProduct={product.imagenes?.[0]?.url ?? ''}
+          price={product.precio ?? 0}
+        />
+      ))
     }
   </main>
 </div>

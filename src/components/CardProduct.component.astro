@@ -24,12 +24,13 @@ const {
 const priceFormat = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD'
-}).format(price / 100)
+}).format(price)
 
 const priceAfterFormat = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD'
-}).format(priceAfter ?? 0 / 100);
+}).format(priceAfter ?? 0)
+
 ---
 
 <article
