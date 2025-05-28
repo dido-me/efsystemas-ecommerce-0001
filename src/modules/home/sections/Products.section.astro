@@ -31,6 +31,23 @@ if (collectionId !== null) {
   }
 }
 
+// Construir URL con parámetros de filtro
+const buildShopUrl = () => {
+  const url = new URL('/shop', Astro.url.origin)
+
+  if (collectionId !== null) {
+    if (filterType === 'marca') {
+      url.searchParams.set('marca', collectionId)
+    } else {
+      url.searchParams.set('categoria', collectionId)
+    }
+  }
+
+  return url.pathname + url.search
+}
+
+const shopUrlWithFilters = buildShopUrl()
+
 const products = await fetchApi<ProductDTO[]>({
   endpoint: 'productos',
   query,
@@ -119,7 +136,7 @@ const sectionClasses = [
           <h3 class="text-xl font-semibold text-gray-900 mb-2">No hay productos disponibles</h3>
           <p class="text-gray-600 mb-6">Actualmente no tenemos productos en esta categoría.</p>
           <a
-            href="/shop"
+            href={shopUrlWithFilters}
             class="inline-flex items-center gap-2 bg-commerce-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-commerce-600 transition-colors duration-200"
           >
             Explorar otros productos
@@ -135,7 +152,7 @@ const sectionClasses = [
     {products.length > 0 && (
       <div class="text-center">
         <a
-          href="/shop"
+          href={shopUrlWithFilters}
           class:list={[
             'inline-flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl',
             featured

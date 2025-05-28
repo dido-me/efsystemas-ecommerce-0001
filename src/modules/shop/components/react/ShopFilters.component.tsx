@@ -1,5 +1,7 @@
 import { indexName, searchClient } from '@src/algolia/config'
-import { InstantSearch, RefinementList, Highlight, Hits, Pagination, SearchBox, Configure } from 'react-instantsearch'
+import { InstantSearch, RefinementList, Highlight, Hits, Pagination, SearchBox, Configure, ClearRefinements, Stats, CurrentRefinements, useInstantSearch } from 'react-instantsearch'
+import { useEffect } from 'react'
+
 import type { Hit as AlgoliaHit } from 'instantsearch.js/es/types'
 
 type HitProps = {
@@ -123,10 +125,77 @@ function Hit ({ hit }: HitProps) {
   )
 }
 
+// Componente para manejar la sincronización con URL
+function URLSync () {
+  const { setUiState, uiState } = useInstantSearch()
+
+  useEffect(() => {
+    // Leer parámetros de URL al cargar
+    const urlParams = new URLSearchParams(window.location.search)
+    const marcaParam = urlParams.get('marca')
+    const categoriaParam = urlParams.get('categoria')
+
+    if (marcaParam || categoriaParam) {
+      const newUiState = { ...uiState }
+
+      // Inicializar el estado del índice si no existe
+      if (!newUiState[indexName]) {
+        newUiState[indexName] = {}
+      }
+
+      // Inicializar refinementList si no existe
+      if (!newUiState[indexName]?.refinementList) {
+        newUiState[indexName]!.refinementList = {}
+      }
+
+      // Aplicar filtros desde URL
+      if (marcaParam) {
+        newUiState[indexName]!.refinementList!['marca.nombre'] = [marcaParam]
+      }
+
+      if (categoriaParam) {
+        newUiState[indexName]!.refinementList!['categorias.nombre'] = [categoriaParam]
+      }
+
+      setUiState(newUiState)
+    }
+  }, [])
+
+  useEffect(() => {
+    // Actualizar URL cuando cambien los filtros
+    const currentState = uiState[indexName]
+    const urlParams = new URLSearchParams()
+
+    // Agregar filtros de marca a la URL
+    if (currentState?.refinementList?.['marca.nombre']?.length && currentState.refinementList['marca.nombre'].length > 0) {
+      currentState.refinementList['marca.nombre'].forEach(marca => {
+        urlParams.append('marca', marca)
+      })
+    }
+
+    // Agregar filtros de categoría a la URL
+    if (currentState?.refinementList?.['categorias.nombre']?.length && currentState.refinementList['categorias.nombre'].length > 0) {
+      currentState.refinementList['categorias.nombre'].forEach(categoria => {
+        urlParams.append('categoria', categoria)
+      })
+    }
+
+    // Actualizar URL sin recargar la página
+    const newUrl = urlParams.toString()
+      ? `${window.location.pathname}?${urlParams.toString()}`
+      : window.location.pathname
+
+    window.history.replaceState({}, '', newUrl)
+  }, [uiState])
+
+  return null
+}
+
 export function ShopFilters () {
   return (
     <InstantSearch indexName={indexName} searchClient={searchClient} future={{ preserveSharedStateOnUnmount: true }}>
       <Configure hitsPerPage={12} />
+      <URLSync />
 
       <div className='py-10 max-w-7xl mx-auto px-4'>
         {/* Barra de búsqueda */}
@@ -159,7 +228,42 @@ export function ShopFilters () {
           {/* Filtros laterales */}
           <aside className="lg:col-span-1">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 sticky top-4">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Filtros</h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Filtros</h2>
+                <ClearRefinements
+                  classNames={{
+                    root: '',
+                    button: 'text-sm text-red-600 hover:text-white font-medium px-4 py-2 border border-red-200 rounded-lg hover:bg-red-600 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105',
+                    disabledButton: 'text-gray-400 cursor-not-allowed border-gray-200 hover:bg-transparent hover:text-gray-400 hover:scale-100'
+                  }}
+                  translations={{
+                    resetButtonText: '🗑️ Limpiar filtros'
+                  }}
+                />
+              </div>
+
+              {/* Filtros activos */}
+              <div className="mb-6">
+                <CurrentRefinements
+                  classNames={{
+                    root: 'space-y-3',
+                    list: 'space-y-3',
+                    item: 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 shadow-sm',
+                    label: 'text-sm font-semibold text-blue-900 mb-2 block',
+                    category: 'flex flex-wrap gap-2',
+                    categoryLabel: 'text-sm font-semibold text-blue-900 mb-2 block',
+                    delete: 'inline-flex items-center gap-1.5 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-full hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 font-medium'
+                  }}
+                  transformItems={(items) => {
+                    return items.map(item => ({
+                      ...item,
+                      label: item.attribute === 'marca.nombre'
+                        ? '🏷️ Marca:'
+                        : item.attribute === 'categorias.nombre' ? '📂 Categoría:' : item.label
+                    }))
+                  }}
+                />
+              </div>
 
               {/* Filtro por marcas */}
               <div className="mb-8">
@@ -217,6 +321,50 @@ export function ShopFilters () {
 
           {/* Resultados principales */}
           <main className="lg:col-span-3">
+            {/* Header de resultados con estadísticas y ordenamiento */}
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <Stats
+                    classNames={{
+                      root: 'text-sm text-gray-600'
+                    }}
+                    translations={{
+                      rootElementText: ({ nbHits, processingTimeMS }: { nbHits: number, processingTimeMS: number }) => {
+                        return `${nbHits.toLocaleString()} productos encontrados en ${processingTimeMS}ms`
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Paginación superior */}
+            <div className="flex justify-center mb-6">
+              <Pagination
+                classNames={{
+                  root: 'flex items-center justify-center gap-2',
+                  list: 'flex gap-1',
+                  item: 'border border-gray-300 text-sm font-medium rounded-md hover:bg-blue-50 hover:border-blue-300 transition-all',
+                  link: 'w-full h-full flex items-center justify-center px-3 py-2 cursor-pointer',
+                  selectedItem: 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700',
+                  disabledItem: 'opacity-50 cursor-not-allowed hover:bg-transparent hover:border-gray-300'
+                }}
+                padding={2}
+                showFirst={true}
+                showPrevious={true}
+                showNext={true}
+                showLast={true}
+                translations={{
+                  firstPageItemText: '««',
+                  previousPageItemText: '‹',
+                  nextPageItemText: '›',
+                  lastPageItemText: '»»'
+                }}
+              />
+            </div>
+
+            {/* Grid de productos */}
             <Hits
               hitComponent={Hit}
               classNames={{
@@ -226,14 +374,14 @@ export function ShopFilters () {
               }}
             />
 
-            {/* Paginación */}
+            {/* Paginación inferior */}
             <div className="flex justify-center">
               <Pagination
                 classNames={{
                   root: 'flex items-center justify-center gap-2',
                   list: 'flex gap-1',
-                  item: 'cursor-pointer border border-gray-300 text-sm font-medium rounded-md px-3 py-2 hover:bg-blue-50 hover:border-blue-300 transition-all',
-                  link: 'w-full h-full flex items-center justify-center',
+                  item: 'border border-gray-300 text-sm font-medium rounded-md hover:bg-blue-50 hover:border-blue-300 transition-all',
+                  link: 'w-full h-full flex items-center justify-center px-3 py-2 cursor-pointer',
                   selectedItem: 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700',
                   disabledItem: 'opacity-50 cursor-not-allowed hover:bg-transparent hover:border-gray-300'
                 }}
