@@ -194,7 +194,11 @@ function URLSync () {
 export function ShopFilters () {
   return (
     <InstantSearch indexName={indexName} searchClient={searchClient} future={{ preserveSharedStateOnUnmount: true }}>
-      <Configure hitsPerPage={12} />
+      <Configure
+        hitsPerPage={12}
+        maxValuesPerFacet={1000}
+        facetingAfterDistinct={true}
+      />
       <URLSync />
 
       <div className='py-10 max-w-7xl mx-auto px-4'>
@@ -271,8 +275,8 @@ export function ShopFilters () {
                 <RefinementList
                   attribute="marca.nombre"
                   showMore={true}
-                  limit={8}
-                  showMoreLimit={20}
+                  limit={5}
+                  showMoreLimit={1000}
                   classNames={{
                     root: 'space-y-2',
                     list: 'space-y-2',
@@ -285,7 +289,7 @@ export function ShopFilters () {
                   }}
                   translations={{
                     showMoreButtonText ({ isShowingMore }) {
-                      return isShowingMore ? 'Ver menos marcas' : 'Ver más marcas'
+                      return isShowingMore ? 'Ver menos marcas' : 'Ver todas las marcas'
                     }
                   }}
                 />
@@ -297,8 +301,8 @@ export function ShopFilters () {
                 <RefinementList
                   attribute="categorias.nombre"
                   showMore={true}
-                  limit={6}
-                  showMoreLimit={15}
+                  limit={5}
+                  showMoreLimit={1000}
                   classNames={{
                     root: 'space-y-2',
                     list: 'space-y-2',
@@ -311,7 +315,7 @@ export function ShopFilters () {
                   }}
                   translations={{
                     showMoreButtonText ({ isShowingMore }) {
-                      return isShowingMore ? 'Ver menos categorías' : 'Ver más categorías'
+                      return isShowingMore ? 'Ver menos categorías' : 'Ver todas las categorías'
                     }
                   }}
                 />
