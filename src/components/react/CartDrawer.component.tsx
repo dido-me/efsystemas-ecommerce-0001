@@ -1,11 +1,26 @@
 import { useStore } from '@nanostores/react'
 import { cartItems, isCartOpen, type Product } from '@src/store/cartStore'
 import { Drawer } from 'flowbite-react'
+import { useEffect } from 'react'
 
 export function CartDrawer () {
   const $isCartOpen = useStore(isCartOpen)
   const $cartItems = useStore(cartItems)
   const handleClose = () => isCartOpen.set(!$isCartOpen)
+
+  // Deshabilitar scroll del body cuando el drawer está abierto
+  useEffect(() => {
+    if ($isCartOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    // Cleanup: restaurar scroll cuando el componente se desmonte
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [$isCartOpen])
 
   const parsedCartItems = Object.keys($cartItems).reduce((acc, key) => {
     const value = $cartItems[key]
@@ -20,7 +35,15 @@ export function CartDrawer () {
 
   return (
         <>
-            <Drawer open={$isCartOpen} onClose={handleClose}>
+            {/* Overlay para bloquear interacción con el fondo */}
+            {$isCartOpen && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                    onClick={handleClose}
+                />
+            )}
+
+            <Drawer open={$isCartOpen} onClose={handleClose} className="z-50">
                 <Drawer.Header title="Mi carrito de compras" />
                 <Drawer.Items>
                     {Object.keys(parsedCartItems).length > 0
