@@ -64,56 +64,221 @@ const getPlainTextFromRichText = (richText: ProductDTO['descripcion']) => {
 }
 
 const plainDescription = getPlainTextFromRichText(product.descripcion)
+
+// Helper functions for better UX
+const getStockStatus = (stock: number) => {
+  if (stock > 10) return { text: 'En stock', color: 'text-green-600', bgColor: 'bg-green-100' }
+  if (stock > 0) return { text: `Últimas ${stock} unidades`, color: 'text-orange-600', bgColor: 'bg-orange-100' }
+  return { text: 'Sin stock', color: 'text-red-600', bgColor: 'bg-red-100' }
+}
+
+const stockStatus = getStockStatus(product.stock)
 ---
 
 <Layout title={`EF SYSTEMAS EIRL | ${product.nombre}`}>
-  <section
-    class="flex flex-col gap-6 max-w-screen-xl mx-auto mb-10 p-4 sm:gap-8 lg:gap-12 lg:mb-20 lg:p-8"
-  >
-    <section class="flex flex-col lg:flex-row gap-4 lg:gap-6">
-      <div class="w-full lg:w-1/2 lg:pr-3">
-        <ProductGallery
-          images={product.imagenes || []}
-          productName={product.nombre}
-          client:load
-        />
-      </div>
-      <div class="w-full lg:w-1/2 lg:pl-3 p-4 lg:p-6 flex flex-col gap-4 sm:gap-6 lg:gap-8">
-        <section class="flex flex-col gap-2 sm:gap-4">
-          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800">
-            {product.nombre}
-          </h1>
-          <p class="font-bold text-slate-500 text-base sm:text-lg">
-            {product.descripcion_corta}
-          </p>
-        </section>
+  <div class="bg-gray-50 min-h-screen">
+    <!-- Breadcrumb -->
+    <nav class="max-w-screen-xl mx-auto px-4 py-4">
+      <ol class="flex items-center space-x-2 text-sm text-gray-600">
+        <li><a href="/" class="hover:text-blue-600 transition-colors">Inicio</a></li>
+        <li><span class="mx-2">/</span></li>
+        <li><a href="/shop" class="hover:text-blue-600 transition-colors">Tienda</a></li>
+        {product.categorias && product.categorias.length > 0 && (
+          <>
+            <li><span class="mx-2">/</span></li>
+            <li><a href={`/shop?categoria=${product.categorias[0].slug}`} class="hover:text-blue-600 transition-colors">{product.categorias[0].nombre}</a></li>
+          </>
+        )}
+        <li><span class="mx-2">/</span></li>
+        <li class="text-gray-900 font-medium truncate">{product.nombre}</li>
+      </ol>
+    </nav>
 
-        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800">
-          {formattedPrice}
-        </h2>
+    <section class="max-w-screen-xl mx-auto mb-10 p-4 lg:p-8">
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="flex flex-col lg:flex-row">
+          <!-- Product Gallery -->
+          <div class="w-full lg:w-1/2 p-6 lg:p-8">
+            <ProductGallery
+              images={product.imagenes || []}
+              productName={product.nombre}
+              client:load
+            />
+          </div>
 
-        <div class="flex flex-col sm:flex-row gap-4 lg:gap-6">
-          <ProductButton {...infoProduct} client:visible />
-          <a
-            class="middle w-full sm:w-auto mr-4 rounded-lg bg-green-500 py-3 px-6 font-sans text-sm lg:text-base font-bold uppercase text-white shadow-md shadow-green-500/20 transition-all hover:shadow-lg hover:shadow-green-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-4"
-            data-ripple-light="true"
-            href={`https://api.whatsapp.com/send?phone=51${numberContact}&text=Estoy%20interesado%20en%20este%20producto%3A%20${urlProduct}`}
-            target="_blank"
-          >
-            <Icon name="whatsapp" />
-            <span>Contiza en WhatsApp</span>
-          </a>
+          <!-- Product Info -->
+          <div class="w-full lg:w-1/2 p-6 lg:p-8 flex flex-col gap-6">
+            <!-- Product Title & Brand -->
+            <div class="space-y-3">
+              {product.marca && (
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium text-gray-500">Marca:</span>
+                  <a href={`/shop?marca=${product.marca.slug}`} class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                    {product.marca.nombre}
+                  </a>
+                </div>
+              )}
+              <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
+                {product.nombre}
+              </h1>
+              {product.descripcion_corta && (
+                <p class="text-lg text-gray-600 leading-relaxed">
+                  {product.descripcion_corta}
+                </p>
+              )}
+            </div>
+
+            <!-- Price & Stock -->
+            <div class="space-y-4">
+              <div class="flex items-baseline gap-3">
+                <h2 class="text-3xl lg:text-4xl font-bold text-gray-900">
+                  {formattedPrice}
+                </h2>
+              </div>
+
+              <!-- Stock Status -->
+              <div class="flex items-center gap-3">
+                <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${stockStatus.bgColor} ${stockStatus.color}`}>
+                  <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  {stockStatus.text}
+                </span>
+                <span class="text-sm text-gray-500">({product.stock} disponibles)</span>
+              </div>
+            </div>
+
+            <!-- Product Specifications -->
+            <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+              <h3 class="font-semibold text-gray-900 text-lg">Especificaciones</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">SKU:</span>
+                  <span class="font-medium text-gray-900">{product.sku}</span>
+                </div>
+                {product.marca && (
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Marca:</span>
+                    <span class="font-medium text-gray-900">{product.marca.nombre}</span>
+                  </div>
+                )}
+                {product.categorias && product.categorias.length > 0 && (
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Categoría:</span>
+                    <span class="font-medium text-gray-900">{product.categorias[0].nombre}</span>
+                  </div>
+                )}
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Stock:</span>
+                  <span class="font-medium text-gray-900">{product.stock} unidades</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Categories -->
+            {product.categorias && product.categorias.length > 0 && (
+              <div class="space-y-3">
+                <h3 class="font-semibold text-gray-900">Categorías</h3>
+                <div class="flex flex-wrap gap-2">
+                  {product.categorias.map((categoria) => (
+                    <a
+                      href={`/shop?categoria=${categoria.slug}`}
+                      class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
+                    >
+                      {categoria.nombre}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+              <ProductButton {...infoProduct} client:visible />
+              <a
+                class="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 rounded-xl bg-green-600 py-4 px-6 font-semibold text-white shadow-lg shadow-green-600/25 transition-all hover:bg-green-700 hover:shadow-xl hover:shadow-green-600/30 focus:outline-none focus:ring-4 focus:ring-green-600/20 active:scale-95"
+                href={`https://api.whatsapp.com/send?phone=51${numberContact}&text=Estoy%20interesado%20en%20este%20producto%3A%20${urlProduct}`}
+                target="_blank"
+              >
+                <Icon name="whatsapp" />
+                <span>Cotizar en WhatsApp</span>
+              </a>
+            </div>
+
+            <!-- Trust Badges -->
+            <div class="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
+              <div class="text-center">
+                <div class="w-8 h-8 mx-auto mb-2 text-blue-600">
+                  <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <p class="text-xs text-gray-600 font-medium">Compra Segura</p>
+              </div>
+              <div class="text-center">
+                <div class="w-8 h-8 mx-auto mb-2 text-blue-600">
+                  <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                  </svg>
+                </div>
+                <p class="text-xs text-gray-600 font-medium">Envío Rápido</p>
+              </div>
+              <div class="text-center">
+                <div class="w-8 h-8 mx-auto mb-2 text-blue-600">
+                  <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <p class="text-xs text-gray-600 font-medium">Soporte 24/7</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
 
-    <section class="flex flex-col gap-2 sm:gap-4 lg:gap-6">
-      <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800">
-        Descripción del Producto
-      </h1>
-      <p class="font-bold text-slate-500 text-base sm:text-lg">
-        {plainDescription}
-      </p>
+      <!-- Product Description -->
+      {plainDescription && plainDescription !== 'Sin descripción' && (
+        <div class="bg-white rounded-2xl shadow-lg mt-8 p-6 lg:p-8">
+          <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
+            Descripción del Producto
+          </h2>
+          <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+            <p class="whitespace-pre-line">{plainDescription}</p>
+          </div>
+        </div>
+      )}
+
+      <!-- Related Categories -->
+      {product.categorias && product.categorias.length > 0 && (
+        <div class="bg-white rounded-2xl shadow-lg mt-8 p-6 lg:p-8">
+          <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
+            Explorar por Categoría
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {product.categorias.map((categoria) => (
+              <a
+                href={`/shop?categoria=${categoria.slug}`}
+                class="group p-4 border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all"
+              >
+                <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  {categoria.nombre}
+                </h3>
+                {categoria.descripcion && (
+                  <p class="text-sm text-gray-600 mt-1 line-clamp-2">
+                    {categoria.descripcion}
+                  </p>
+                )}
+                <div class="flex items-center mt-3 text-sm text-blue-600 group-hover:text-blue-700">
+                  <span>Ver productos</span>
+                  <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
-  </section>
+  </div>
 </Layout>

@@ -29,7 +29,7 @@ export function ItemProduct (parm: Product) {
                 {parm.title}
               </h6>
             </a>
-            <span className="text-commerce-600">${(parm.price / 100).toFixed(2)}</span>
+            <span className="text-commerce-600">${(parm.price).toFixed(2)}</span>
 
             <button
               onClick={handleDeleteFromCart}
@@ -86,7 +86,7 @@ export function ItemProduct (parm: Product) {
 
         {/* Sección del Total */}
         <div className="w-full sm:w-1/5 text-right mt-2 sm:mt-0">
-          <span className="font-bold text-gray-800">${((parm.price * parm.quantity) / 100).toFixed(2)}</span>
+          <span className="font-bold text-gray-800">${((parm.price * parm.quantity)).toFixed(2)}</span>
         </div>
       </div>
     </li>

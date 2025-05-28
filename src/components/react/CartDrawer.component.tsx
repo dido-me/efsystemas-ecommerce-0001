@@ -43,17 +43,17 @@ export function CartDrawer () {
                                                         <h2 className="text-sm font-medium text-gray-900 dark:text-white">{item.title}</h2>
                                                     </a>
                                                     <p className="text-xs text-gray-500 dark:text-gray-400">{item.description.length > 200 ? `${item.description.substring(0, 50)}...` : item.description}</p>
-                                                    <p className="text-xs text-gray-800 dark:text-gray-300">UND: &nbsp;${(item.price / 100).toFixed(2)}</p>
+                                                    <p className="text-xs text-gray-800 dark:text-gray-300">UND: &nbsp;${(item.price).toFixed(2)}</p>
                                                     <p className="text-sm text-gray-800 dark:text-gray-300">
                                                         {item.priceAfter && item.priceAfter > 0
                                                           ? (
                                                                 <>
-                                                                    <span className="line-through text-gray-500">${(item.price / 100).toFixed(2)}</span>
-                                                                    &nbsp;<span className="text-cyan-600">${(item.priceAfter / 100).toFixed(2)}</span>
+                                                                    <span className="line-through text-gray-500">${(item.price).toFixed(2)}</span>
+                                                                    &nbsp;<span className="text-cyan-600">${(item.priceAfter).toFixed(2)}</span>
                                                                 </>
                                                             )
                                                           : (
-                                                                `$${(item.price * item.quantity / 100).toFixed(2)}`
+                                                                `$${(item.price * item.quantity).toFixed(2)}`
                                                             )}
                                                     </p>
 

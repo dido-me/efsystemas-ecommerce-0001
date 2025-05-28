@@ -38,14 +38,14 @@ export default function CheckOutButton () {
         const item = parsedCartItems[key]
         if (item) {
           const productLink = `${domain}/product/${item.idProduct}/${item.handle}`
-          return `${item.title} (ID: ${item.idProduct}), Cantidad: ${item.quantity}, Precio: ${(item.price / 100).toFixed(2)}\nLink: ${productLink}`
+          return `${item.title} (ID: ${item.idProduct}), Cantidad: ${item.quantity}, Precio: ${(item.price).toFixed(2)}\nLink: ${productLink}`
         }
         return null
       })
       .filter(Boolean)
       .join('\n\n')
 
-    const message = `Estoy interesado en los siguientes productos:\n${productDetails}\n\nTotal: ${(total / 100).toFixed(2)}`
+    const message = `Estoy interesado en los siguientes productos:\n${productDetails}\n\nTotal: ${(total).toFixed(2)}`
 
     const whatsappURL = `https://api.whatsapp.com/send?phone=51${numberContact}&text=${encodeURIComponent(message)}`
     window.open(whatsappURL, '_blank')
@@ -59,7 +59,7 @@ export default function CheckOutButton () {
           disabled
         >
           Realizar Pedido &nbsp;
-          <span className="font-bold">{(total / 100).toFixed(2)}</span>
+          <span className="font-bold">{(total).toFixed(2)}</span>
         </button>
       </div>
     )
@@ -72,7 +72,7 @@ export default function CheckOutButton () {
       type="button"
     >
       Relizar Pedido
-      <span className="font-bold">{(total / 100).toFixed(2)}</span>
+      <span className="font-bold">{(total).toFixed(2)}</span>
     </button>
   )
 }
