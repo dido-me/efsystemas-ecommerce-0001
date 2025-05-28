@@ -34,7 +34,7 @@ function Hit ({ hit }: HitProps) {
   // Get the best image URL available
   const getImageUrl = () => {
     if (!hit.imagenes || hit.imagenes.length === 0) {
-      return '/placeholder-product.jpg' // Fallback image
+      return '/producto/placehold.png' // Fallback image
     }
 
     const image = hit.imagenes[0]
@@ -44,7 +44,7 @@ function Hit ({ hit }: HitProps) {
     if (image.formats?.thumbnail?.url) {
       return image.formats.thumbnail.url
     }
-    return image.url || '/placeholder-product.jpg'
+    return image.url || '/producto/placehold.png'
   }
 
   // Format price

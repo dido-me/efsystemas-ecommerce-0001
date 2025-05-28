@@ -3,22 +3,42 @@ import Layout from '@src/layouts/Layout.astro'
 import Products from '@src/modules/home/sections/Products.section.astro'
 // import SliderCategories from '@src/modules/home/sections/SliderCategories.section.astro'
 
-const SECTION_PRODUCTS = [
+const SECTION_PRODUCTS: Array<{
+  title: string;
+  idTag: string | null;
+  filterType: 'categoria' | 'marca';
+}> = [
+  // Secciones por marcas (priorizadas)
+  {
+    title: 'Productos HP',
+    idTag: 'HP',
+    filterType: 'marca'
+  },
+  {
+    title: 'Productos EPSON',
+    idTag: 'EPSON',
+    filterType: 'marca'
+  },
+  // Secciones por categorías (existentes)
   {
     title: 'Productos Tinta',
-    idTag: 'Tinta'
+    idTag: 'Tinta',
+    filterType: 'categoria'
   },
   {
     title: 'Productos Toner',
-    idTag: 'Toner'
+    idTag: 'Toner',
+    filterType: 'categoria'
   },
   {
     title: 'Productos Recientes',
-    idTag: null
+    idTag: null,
+    filterType: 'categoria'
   },
   {
     title: 'Productos Partes y Piezas de computadora',
-    idTag: 'PARTES Y PIEZAS DE COMPUTADORA'
+    idTag: 'PARTES Y PIEZAS DE COMPUTADORA',
+    filterType: 'categoria'
   }
 ];
 ---
@@ -27,8 +47,8 @@ const SECTION_PRODUCTS = [
   title="EF SYSTEMAS EIRL | La mejor tienda en linea de suministros de impresión y computo"
 >
   {
-    SECTION_PRODUCTS.map(({ title, idTag }) => (
-      <Products title={title} collectionId={idTag} />
+    SECTION_PRODUCTS.map(({ title, idTag, filterType }) => (
+      <Products title={title} collectionId={idTag} filterType={filterType} />
     ))
   }
   <!-- <SliderCategories /> -->

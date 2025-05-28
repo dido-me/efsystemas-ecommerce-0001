@@ -6,9 +6,10 @@ import type { ProductDTO } from '@src/interfaces/ProductoDto'
 interface Props {
   title: string;
   collectionId: string | null;
+  filterType?: 'categoria' | 'marca';
 }
 
-const { collectionId, title } = Astro.props as Props
+const { collectionId, title, filterType = 'categoria' } = Astro.props as Props
 
 // Build query parameters for Strapi API
 const query: Record<string, string> = {
@@ -19,9 +20,13 @@ const query: Record<string, string> = {
   'pagination[limit]': '10'
 }
 
-// Add category filter only if collectionId is provided
+// Add filter based on filterType only if collectionId is provided
 if (collectionId !== null) {
-  query['filters[categorias][nombre][$eq]'] = collectionId
+  if (filterType === 'marca') {
+    query['filters[marca][nombre][$eq]'] = collectionId
+  } else {
+    query['filters[categorias][nombre][$eq]'] = collectionId
+  }
 }
 
 const products = await fetchApi<ProductDTO[]>({
@@ -52,16 +57,32 @@ const products = await fetchApi<ProductDTO[]>({
     class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] grid-rows-[masonry] auto-rows-max"
   >
     {
-      products.map((product) => (
-        <CardProduct
-          idProduct={product.documentId ?? ''}
-          title={product.nombre ?? ''}
-          description={product.descripcion_corta ?? ''}
-          handle={product.slug ?? ''}
-          imageProduct={product.imagenes?.[0]?.url ?? ''}
-          price={product.precio ?? 0}
-        />
-      ))
+      products.map((product) => {
+        // Función para encontrar la primera imagen (no video) en el array
+        const getFirstImageUrl = () => {
+          if (!product.imagenes || product.imagenes.length === 0) {
+            return '/producto/placehold.png'
+          }
+
+          // Buscar la primera imagen que no sea un video
+          const firstImage = product.imagenes.find(imagen =>
+            imagen.mime && !imagen.mime.startsWith('video/')
+          )
+
+          return firstImage?.url ?? '/producto/placehold.png'
+        }
+
+        return (
+          <CardProduct
+            idProduct={product.documentId ?? ''}
+            title={product.nombre ?? ''}
+            description={product.descripcion_corta ?? ''}
+            handle={product.slug ?? ''}
+            imageProduct={getFirstImageUrl()}
+            price={product.precio ?? 0}
+          />
+        )
+      })
     }
   </main>
 </div>

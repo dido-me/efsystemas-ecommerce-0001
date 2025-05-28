@@ -3,6 +3,7 @@ import Icon from '@src/components/Icon.component.astro'
 import { numberContact } from '@src/consts/numberContact'
 import Layout from '@src/layouts/Layout.astro'
 import { ProductButton } from '@src/modules/producto/components/react/ProductButton.component'
+import { ProductGallery } from '@src/components/react/ProductGallery.component'
 import fetchApi from '@src/utils/strapi'
 import type { ProductDTO } from '@src/interfaces/ProductoDto'
 
@@ -69,32 +70,15 @@ const plainDescription = getPlainTextFromRichText(product.descripcion)
   <section
     class="flex flex-col gap-6 max-w-screen-xl mx-auto mb-10 p-4 sm:gap-8 lg:gap-12 lg:mb-20 lg:p-8"
   >
-    <section class="flex flex-col lg:flex-row gap-6 lg:gap-12">
-      <div class="flex-1">
-        {
-          product.imagenes && product.imagenes.length > 0 && (
-            <div class="flex gap-2 px-4 sm:px-6 lg:px-8">
-              {product.imagenes.map((image) => (
-                <img
-                  src={image.url}
-                  alt={product.nombre}
-                  class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-center object-cover drop-shadow-sm"
-                  width={64}
-                  height={64}
-                />
-              ))}
-            </div>
-          )
-        }
-        <img
-          src={product.imagenes?.[0]?.url || '/placehold-products.png'}
-          alt={product.nombre}
-          class="w-full rounded-t-lg object-center object-cover drop-shadow-sm mt-4"
-          width={600}
-          height={600}
+    <section class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+      <div class="w-full lg:w-1/2 lg:pr-3">
+        <ProductGallery
+          images={product.imagenes || []}
+          productName={product.nombre}
+          client:load
         />
       </div>
-      <div class="flex-1 p-4 sm:p-6 lg:p-8 flex flex-col gap-8">
+      <div class="w-full lg:w-1/2 lg:pl-3 p-4 lg:p-6 flex flex-col gap-4 sm:gap-6 lg:gap-8">
         <section class="flex flex-col gap-2 sm:gap-4">
           <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800">
             {product.nombre}
@@ -104,9 +88,9 @@ const plainDescription = getPlainTextFromRichText(product.descripcion)
           </p>
         </section>
 
-        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800">
           {formattedPrice}
-        </h1>
+        </h2>
 
         <div class="flex flex-col sm:flex-row gap-4 lg:gap-6">
           <ProductButton {...infoProduct} client:visible />
