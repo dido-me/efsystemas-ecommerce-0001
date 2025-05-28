@@ -86,7 +86,7 @@ const stockStatus = getStockStatus(product.stock)
         {product.categorias && product.categorias.length > 0 && (
           <>
             <li><span class="mx-2">/</span></li>
-            <li><a href={`/shop?categoria=${product.categorias[0].slug}`} class="hover:text-blue-600 transition-colors">{product.categorias[0].nombre}</a></li>
+            <li><a href={`/shop?categoria=${product.categorias[0].nombre}`} class="hover:text-blue-600 transition-colors">{product.categorias[0].nombre}</a></li>
           </>
         )}
         <li><span class="mx-2">/</span></li>
@@ -113,7 +113,7 @@ const stockStatus = getStockStatus(product.stock)
               {product.marca && (
                 <div class="flex items-center gap-2">
                   <span class="text-sm font-medium text-gray-500">Marca:</span>
-                  <a href={`/shop?marca=${product.marca.slug}`} class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                  <a href={`/shop?marca=${product.marca.nombre}`} class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
                     {product.marca.nombre}
                   </a>
                 </div>
@@ -182,7 +182,7 @@ const stockStatus = getStockStatus(product.stock)
                 <div class="flex flex-wrap gap-2">
                   {product.categorias.map((categoria) => (
                     <a
-                      href={`/shop?categoria=${categoria.slug}`}
+                      href={`/shop?categoria=${categoria.nombre}`}
                       class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
                     >
                       {categoria.nombre}
@@ -257,7 +257,7 @@ const stockStatus = getStockStatus(product.stock)
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {product.categorias.map((categoria) => (
               <a
-                href={`/shop?categoria=${categoria.slug}`}
+                href={`/shop?categoria=${categoria.nombre}`}
                 class="group p-4 border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all"
               >
                 <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
