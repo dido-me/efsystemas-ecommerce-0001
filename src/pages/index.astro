@@ -1,54 +1,84 @@
 ---
 import Layout from '@src/layouts/Layout.astro'
 import Products from '@src/modules/home/sections/Products.section.astro'
+import HeroBrand from '@src/components/HeroBrand.component.astro'
 // import SliderCategories from '@src/modules/home/sections/SliderCategories.section.astro'
 
 const SECTION_PRODUCTS: Array<{
   title: string;
   idTag: string | null;
   filterType: 'categoria' | 'marca';
+  featured?: boolean;
+  description?: string;
 }> = [
-  // Secciones por marcas (priorizadas)
+  // HP con máximo protagonismo
   {
-    title: 'Productos HP',
+    title: 'Productos HP - Líder en Innovación',
     idTag: 'HP',
-    filterType: 'marca'
+    filterType: 'marca',
+    featured: true,
+    description: 'Descubre la gama completa de productos HP: impresoras, cartuchos, toners y accesorios de la más alta calidad. Tecnología confiable para tu hogar y oficina.'
   },
+  // EPSON como segunda marca destacada
   {
-    title: 'Productos EPSON',
+    title: 'Productos EPSON - Calidad Profesional',
     idTag: 'EPSON',
-    filterType: 'marca'
+    filterType: 'marca',
+    description: 'Soluciones de impresión EPSON para profesionales. Impresoras de alta precisión y consumibles originales.'
   },
-  // Secciones por categorías (existentes)
+  // Categorías principales
   {
-    title: 'Productos Tinta',
+    title: 'Cartuchos de Tinta - Máxima Calidad',
     idTag: 'Tinta',
-    filterType: 'categoria'
+    filterType: 'categoria',
+    description: 'Cartuchos de tinta originales y compatibles para todas las marcas. Colores vibrantes y durabilidad garantizada.'
   },
   {
-    title: 'Productos Toner',
+    title: 'Toners Láser - Rendimiento Superior',
     idTag: 'Toner',
-    filterType: 'categoria'
+    filterType: 'categoria',
+    description: 'Toners láser de alta capacidad para impresión profesional. Texto nítido y documentos de calidad empresarial.'
   },
   {
-    title: 'Productos Recientes',
+    title: 'Productos Recientes - Lo Último en Tecnología',
     idTag: null,
-    filterType: 'categoria'
+    filterType: 'categoria',
+    description: 'Descubre nuestros productos más recientes con la última tecnología en impresión y suministros.'
   },
   {
-    title: 'Productos Partes y Piezas de computadora',
+    title: 'Partes y Piezas de Computadora',
     idTag: 'PARTES Y PIEZAS DE COMPUTADORA',
-    filterType: 'categoria'
+    filterType: 'categoria',
+    description: 'Componentes y accesorios para computadoras. Todo lo que necesitas para mantener tu equipo funcionando perfectamente.'
   }
 ];
 ---
 
 <Layout
-  title="EF SYSTEMAS EIRL | La mejor tienda en linea de suministros de impresión y computo"
+  title="EF SYSTEMAS EIRL | La mejor tienda en línea de suministros de impresión y cómputo"
 >
+  <!-- Hero Section para HP -->
+  <HeroBrand
+    brandName="HP"
+    brandImage="/logos/logo_hp.png"
+    featured={true}
+    tagline="Innovación que transforma tu productividad"
+    description="Líder mundial en tecnología de impresión. Descubre por qué millones de usuarios confían en HP para sus necesidades de impresión profesional y personal."
+    ctaText="Explorar Productos HP"
+    ctaLink="/shop?marca=HP"
+    class="mb-8"
+  />
+
+  <!-- Secciones de Productos -->
   {
-    SECTION_PRODUCTS.map(({ title, idTag, filterType }) => (
-      <Products title={title} collectionId={idTag} filterType={filterType} />
+    SECTION_PRODUCTS.map(({ title, idTag, filterType, featured, description }) => (
+      <Products
+        title={title}
+        collectionId={idTag}
+        filterType={filterType}
+        featured={featured}
+        description={description}
+      />
     ))
   }
   <!-- <SliderCategories /> -->

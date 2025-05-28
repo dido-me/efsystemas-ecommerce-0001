@@ -1,0 +1,245 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import ProductCard from './ProductCard.component.astro'
+import fetchApi from '@src/utils/strapi'
+import type { ProductDTO } from '@src/interfaces/ProductoDto'
+
+interface Props extends HTMLAttributes<'section'> {
+  title: string;
+  collectionId: string | null;
+  filterType?: 'categoria' | 'marca';
+  featured?: boolean;
+  description?: string;
+  viewAllText?: string;
+  viewAllLink?: string;
+  layout?: 'grid' | 'carousel';
+  maxProducts?: number;
+}
+
+const {
+  title,
+  collectionId,
+  filterType = 'categoria',
+  featured = false,
+  description,
+  viewAllText = 'Ver todos los productos',
+  viewAllLink = '/shop',
+  layout = 'grid',
+  maxProducts = 8,
+  ...attrs
+} = Astro.props as Props
+
+// Build query parameters for Strapi API
+const query: Record<string, string> = {
+  'populate[0]': 'categorias',
+  'populate[1]': 'marca',
+  'populate[2]': 'imagenes',
+  'sort[0]': 'createdAt:desc',
+  'pagination[limit]': maxProducts.toString()
+}
+
+// Add filter based on filterType only if collectionId is provided
+if (collectionId !== null) {
+  if (filterType === 'marca') {
+    query['filters[marca][nombre][$eq]'] = collectionId
+  } else {
+    query['filters[categorias][nombre][$eq]'] = collectionId
+  }
+}
+
+const products = await fetchApi<ProductDTO[]>({
+  endpoint: 'productos',
+  query,
+  wrappedByKey: 'data'
+}).catch((error) => {
+  console.error('Error retrieving products:', error)
+  return []
+})
+
+// Process products data in frontmatter
+const processedProducts = products.map((product, index) => {
+  // Función para encontrar la primera imagen (no video) en el array
+  const getFirstImageUrl = () => {
+    if (!product.imagenes || product.imagenes.length === 0) {
+      return '/producto/placehold.png'
+    }
+
+    // Buscar la primera imagen que no sea un video
+    const firstImage = product.imagenes.find(
+      (imagen) => imagen.mime && !imagen.mime.startsWith('video/')
+    )
+
+    return firstImage?.url ?? '/producto/placehold.png'
+  }
+
+  return {
+    idProduct: product.documentId ?? '',
+    title: product.nombre ?? '',
+    description: product.descripcion_corta ?? '',
+    handle: product.slug ?? '',
+    imageProduct: getFirstImageUrl(),
+    price: product.precio ?? 0,
+    brand: product.marca?.nombre,
+    category: product.categorias?.[0]?.nombre,
+    featured: featured && index < 2,
+    inStock: true,
+    rating: 4.5,
+    reviewCount: Math.floor(Math.random() * 50) + 10
+  }
+})
+
+const sectionClasses = [
+  'py-16 px-4 md:px-6 lg:px-8',
+  featured ? 'bg-gradient-to-br from-blue-50 to-indigo-100' : 'bg-white'
+]
+
+const containerClasses = [
+  'max-w-7xl mx-auto',
+  layout === 'carousel' ? 'overflow-hidden' : ''
+]
+
+const gridClasses = [
+  'gap-6 md:gap-8',
+  layout === 'grid'
+    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+    : 'flex overflow-x-auto pb-4 space-x-6'
+];
+---
+
+<section class:list={sectionClasses} {...attrs}>
+  <div class:list={containerClasses}>
+    <!-- Section Header -->
+    <header class="text-center mb-12">
+      {
+        featured && (
+          <div class="inline-flex items-center gap-2 bg-yellow-400 text-black px-4 py-2 rounded-full text-sm font-bold mb-4">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            SECCIÓN DESTACADA
+          </div>
+        )
+      }
+
+      <h2
+        class:list={[
+          'text-3xl md:text-4xl lg:text-5xl font-bold mb-4',
+          featured ? 'text-gray-900' : 'text-gray-900'
+        ]}
+      >
+        {title}
+      </h2>
+
+      {
+        description && (
+          <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            {description}
+          </p>
+        )
+      }
+
+      <!-- Decorative Line -->
+      <div class="flex items-center justify-center mt-8 mb-4">
+        <div
+          class="h-1 w-20 bg-gradient-to-r from-commerce-500 to-commerce-600 rounded-full"
+        >
+        </div>
+        <div class="h-2 w-2 bg-commerce-500 rounded-full mx-4"></div>
+        <div
+          class="h-1 w-20 bg-gradient-to-l from-commerce-500 to-commerce-600 rounded-full"
+        >
+        </div>
+      </div>
+    </header>
+
+    <!-- Products Grid/Carousel -->
+    {
+      processedProducts.length > 0
+        ? (
+        <div class:list={gridClasses}>
+          {processedProducts.map((product) => (
+            <div class={layout === 'carousel' ? 'flex-shrink-0 w-80' : ''}>
+              <ProductCard {...product} />
+            </div>
+          ))}
+        </div>
+          )
+        : (
+        <div class="text-center py-16">
+          <div class="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+            <svg
+              class="w-12 h-12 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1H7a1 1 0 00-1 1v1m8 0V4.5"
+              />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            No hay productos disponibles
+          </h3>
+          <p class="text-gray-600 mb-6">
+            Actualmente no tenemos productos en esta categoría.
+          </p>
+          <a
+            href="/shop"
+            class="inline-flex items-center gap-2 bg-commerce-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-commerce-600 transition-colors duration-200"
+          >
+            Explorar otros productos
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
+          </a>
+        </div>
+          )
+    }
+
+    <!-- View All Button -->
+    {
+      processedProducts.length > 0 && (
+        <div class="text-center mt-12">
+          <a
+            href={viewAllLink}
+            class:list={[
+              'inline-flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl',
+              featured
+                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black hover:from-yellow-300 hover:to-yellow-400 shadow-yellow-400/25'
+                : 'bg-commerce-500 text-white hover:bg-commerce-600 shadow-commerce-500/25'
+            ]}
+          >
+            {viewAllText}
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
+          </a>
+        </div>
+      )
+    }
+  </div>
+</section>
