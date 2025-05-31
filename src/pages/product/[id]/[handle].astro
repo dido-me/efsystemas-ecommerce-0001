@@ -6,6 +6,7 @@ import { ProductButton } from '@src/modules/producto/components/react/ProductBut
 import { ProductGallery } from '@src/components/react/ProductGallery.component'
 import fetchApi from '@src/utils/strapi'
 import type { ProductDTO } from '@src/interfaces/ProductoDto'
+import { renderRichText } from '@src/utils/richTextRenderer'
 
 const { id } = Astro.params
 
@@ -49,75 +50,7 @@ const infoProduct = {
   imageProduct: product.imagenes?.[0]?.url || '/images/placeholder.png'
 }
 
-// Convert rich text description to formatted HTML for display
-const renderRichTextDescription = (richText: ProductDTO['descripcion']) => {
-  if (!richText || !Array.isArray(richText)) return null
-
-  return richText.map((item) => {
-    if (item.type === 'paragraph') {
-      return item.children.map((child) => {
-        if (child.text === '') {
-          return '<br><br>'
-        }
-
-        let text = child.text || ''
-        if (child.bold) {
-          text = `<strong>${text}</strong>`
-        }
-        if (child.italic) {
-          text = `<em>${text}</em>`
-        }
-        return `<p>${text}</p>`
-      }).join('')
-    }
-
-    if (item.type === 'heading') {
-      const text = item.children[0]?.text || ''
-      const formattedText = item.children[0]?.bold ? `<strong>${text}</strong>` : text
-
-      if (item.level === 1) {
-        return `<h2 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${formattedText}</h2>`
-      }
-      if (item.level === 2) {
-        return `<h3 class="text-2xl font-bold text-gray-900 mt-6 mb-3">${formattedText}</h3>`
-      }
-      if (item.level === 3) {
-        return `<h4 class="text-xl font-bold text-gray-900 mt-5 mb-3">${formattedText}</h4>`
-      }
-      if (item.level === 4) {
-        return `<h4 class="text-lg font-bold text-gray-900 mt-4 mb-2">${formattedText}</h4>`
-      }
-      if (item.level === 5) {
-        return `<h5 class="text-base font-bold text-gray-900 mt-3 mb-2">${formattedText}</h5>`
-      }
-      if (item.level === 6) {
-        return `<h6 class="text-sm font-bold text-gray-900 mt-2 mb-1">${formattedText}</h6>`
-      }
-    }
-
-    if (item.type === 'image' && item.image?.url) {
-      return `<div class="my-8 flex justify-center">
-        <img
-          src="${item.image.url}"
-          alt="${item.image.alternativeText || product.nombre}"
-          class="max-w-full max-h-96 w-auto h-auto rounded-xl shadow-lg border border-gray-200 object-contain"
-          loading="lazy"
-        />
-      </div>`
-    }
-
-    if (item.type === 'quote') {
-      const text = item.children?.map(child => child.text || '').join('') || ''
-      return `<blockquote class="relative p-6 my-6 bg-gray-50 rounded-lg border-l-4 border-blue-500">
-        <p class="text-lg italic text-gray-700">"${text}"</p>
-      </blockquote>`
-    }
-
-    return ''
-  }).join('')
-}
-
-const formattedDescription = renderRichTextDescription(product.descripcion)
+const formattedDescription = renderRichText(product.descripcion || [], product.nombre || 'Producto')
 
 // Helper functions for better UX
 const getStockStatus = (stock: number) => {
