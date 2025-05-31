@@ -83,9 +83,22 @@ const getStockStatus = (stock: number) => {
 }
 
 const stockStatus = getStockStatus(product.stock)
+
+// Prepare metadata for social sharing
+const productMetadata = {
+  title: `${product.nombre} | EF SYSTEMAS EIRL`,
+  description: product.descripcion_corta || `${product.nombre} - ${formattedPrice}. ${product.marca?.nombre ? `Marca: ${product.marca.nombre}` : ''} Stock disponible: ${product.stock} unidades.`,
+  image: product.imagenes?.[0]?.url || '/images/placeholder.png',
+  url: Astro.url.href,
+  type: 'product' as const,
+  price: product.precio,
+  currency: 'USD',
+  availability: product.stock > 0 ? 'in stock' as const : 'out of stock' as const,
+  brand: product.marca?.nombre
+}
 ---
 
-<Layout title={`EF SYSTEMAS EIRL | ${product.nombre}`}>
+<Layout {...productMetadata}>
   <div class="bg-gray-50 min-h-screen">
     <!-- Breadcrumb -->
     <nav class="max-w-screen-xl mx-auto px-4 py-4">

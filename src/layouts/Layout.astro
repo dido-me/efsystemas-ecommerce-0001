@@ -10,9 +10,32 @@ import { keywords } from '@src/consts/keyWords.const'
 
 interface Props {
   title: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  type?: 'website' | 'article' | 'product';
+  siteName?: string;
+  price?: number;
+  currency?: string;
+  availability?: 'in stock' | 'out of stock';
+  brand?: string;
 }
 
-const { title } = Astro.props as Props
+const {
+  title,
+  description = `Encuentra los mejores suministros de computadora y tecnología, con un enfoque en productos HP como tintas, tóneres, impresoras y más. Otros productos incluyen laptops, componentes de PC y accesorios: ${keywords}.`,
+  image = '/images/logo.png',
+  url = Astro.url.href,
+  type = 'website',
+  siteName = 'EF SYSTEMAS EIRL',
+  price,
+  currency = 'USD',
+  availability = 'in stock',
+  brand
+} = Astro.props as Props
+
+// Ensure image URL is absolute
+const absoluteImageUrl = image?.startsWith('http') ? image : new URL(image || '/images/logo.png', Astro.url.origin).href
 
 ---
 
@@ -24,8 +47,36 @@ const { title } = Astro.props as Props
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={`Encuentra los mejores suministros de computadora y tecnología, con un enfoque en productos HP como tintas, tóneres, impresoras y más. Otros productos incluyen laptops, componentes de PC y accesorios: ${keywords}.`} />
+
+    <!-- Basic Meta Tags -->
+    <meta name="description" content={description} />
     <title>{title}</title>
+
+    <!-- Open Graph Meta Tags for Facebook, WhatsApp, etc. -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={absoluteImageUrl} />
+    <meta property="og:url" content={url} />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="es_PE" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={absoluteImageUrl} />
+
+    <!-- Product-specific Meta Tags (if it's a product) -->
+    {type === 'product' && (
+      <>
+        {price && <meta property="product:price:amount" content={price.toString()} />}
+        <meta property="product:price:currency" content={currency} />
+        <meta property="product:availability" content={availability} />
+        {brand && <meta property="product:brand" content={brand} />}
+      </>
+    )}
+
     <GoogleAnalytics />
   </head>
   <body>
