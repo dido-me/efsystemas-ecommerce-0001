@@ -38,7 +38,7 @@ const formattedPrice = product.precio
   }).format(product.precio)
   : 'Consulta el precio en WhatsApp ⬇️'
 
-const urlProduct = Astro.url.toString()
+const urlProduct = Astro.request.url
 
 const infoProduct = {
   title: product.nombre || 'Sin título',
