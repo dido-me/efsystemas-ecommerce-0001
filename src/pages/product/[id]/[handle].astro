@@ -5,7 +5,7 @@ import Layout from '@src/layouts/Layout.astro'
 import { ProductButton } from '@src/modules/producto/components/react/ProductButton.component'
 import { ProductGallery } from '@src/components/react/ProductGallery.component'
 import fetchApi from '@src/utils/strapi'
-import type { ProductDTO } from '@src/interfaces/ProductoDto'
+import type { ProductDTO, ProductHtmlTemplateDTO } from '@src/interfaces/ProductoDto'
 import { renderRichText } from '@src/utils/richTextRenderer'
 
 const { id } = Astro.params
@@ -50,7 +50,30 @@ const infoProduct = {
   imageProduct: product.imagenes?.[0]?.url || '/images/placeholder.png'
 }
 
-const formattedDescription = renderRichText(product.descripcion || [], product.nombre || 'Producto')
+// Handle product description based on usarHtmlTemplate
+let formattedDescription: string | null = null
+
+if (product.usarHtmlTemplate) {
+  // Fetch processed HTML template
+  try {
+    const htmlResponse = await fetchApi<ProductHtmlTemplateDTO>({
+      endpoint: `productos/${id}`,
+      query: {
+        processedHtmlOnly: 'true'
+      },
+      wrappedByKey: 'data'
+    })
+
+    formattedDescription = htmlResponse.htmlTemplateProcessed || null
+  } catch (error) {
+    console.error('Error fetching HTML template:', error)
+    // Fallback to rich text if HTML template fails
+    formattedDescription = renderRichText(product.descripcion || [], product.nombre || 'Producto')
+  }
+} else {
+  // Use rich text renderer for normal descriptions
+  formattedDescription = renderRichText(product.descripcion || [], product.nombre || 'Producto')
+}
 
 // Helper functions for better UX
 const getStockStatus = (stock: number) => {

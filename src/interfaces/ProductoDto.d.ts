@@ -118,6 +118,7 @@ export interface ProductDTO {
     descripcion: RichTextBlockDTO[];
     descripcion_corta: string | null;
     precio: number;
+    usarHtmlTemplate: boolean;
     stock: number;
     slug: string;
     createdAt: string; // ISO Date string
@@ -128,3 +129,17 @@ export interface ProductDTO {
     marca: MarcaNestedDTO | null;
     imagenes: ImagenNestedDTO[] | null;
   }
+
+// Para la respuesta de /api/productos/{id}?processedHtmlOnly=true
+export interface ProductHtmlTemplateDTO {
+  id: number;
+  nombre: string;
+  htmlTemplateProcessed: string;
+  usarHtmlTemplate: boolean;
+}
+
+// Para la respuesta completa de la API con processedHtmlOnly=true
+export interface ProductHtmlTemplateResponseDTO {
+  data: ProductHtmlTemplateDTO;
+  meta: Record<string, unknown>; // Los metadatos pueden variar, usando Record genérico
+}
