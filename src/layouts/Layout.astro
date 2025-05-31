@@ -7,6 +7,7 @@ import Header from '@src/components/Header.component.astro'
 import { CartDrawer } from '@src/components/react'
 import WhatsappFloatButton from '@src/components/WhatsappFloatButton.component.astro'
 import { keywords } from '@src/consts/keyWords.const'
+import { SEO } from 'astro-seo'
 
 interface Props {
   title: string;
@@ -24,7 +25,7 @@ interface Props {
 const {
   title,
   description = `Encuentra los mejores suministros de computadora y tecnología, con un enfoque en productos HP como tintas, tóneres, impresoras y más. Otros productos incluyen laptops, componentes de PC y accesorios: ${keywords}.`,
-  image = '/images/logo.png',
+  image = '/producto/placehold.png',
   url = Astro.url.href,
   type = 'website',
   siteName = 'EF SYSTEMAS EIRL',
@@ -35,48 +36,78 @@ const {
 } = Astro.props as Props
 
 // Ensure image URL is absolute
-const absoluteImageUrl = image?.startsWith('http') ? image : new URL(image || '/images/logo.png', Astro.url.origin).href
+const absoluteImageUrl = image?.startsWith('http') ? image : new URL(image || '/producto/placehold.png', Astro.url.origin).href
+
+// Prepare Open Graph data
+const openGraph = {
+  basic: {
+    title,
+    type: type as 'website' | 'article' | 'product' | 'object',
+    image: absoluteImageUrl,
+    url
+  },
+  optional: {
+    description,
+    siteName,
+    locale: 'es_PE'
+  },
+  image: {
+    url: absoluteImageUrl,
+    width: 1200,
+    height: 630,
+    alt: title
+  },
+  article: type === 'article'
+    ? {
+        publishedTime: new Date().toISOString(),
+        modifiedTime: new Date().toISOString(),
+        section: 'Productos',
+        tags: ['tecnología', 'computadora', 'suministros']
+      }
+    : undefined
+}
+
+// Twitter Card data
+const twitter = {
+  card: 'summary_large_image' as const,
+  site: '@efsystemas',
+  creator: '@efsystemas',
+  title,
+  description,
+  image: absoluteImageUrl,
+  imageAlt: title
+}
+
+// Additional meta tags for products
+const extend = type === 'product'
+  ? {
+      meta: [
+        ...(price ? [{ name: 'product:price:amount', content: price.toString() }] : []),
+        { name: 'product:price:currency', content: currency },
+        { name: 'product:availability', content: availability },
+        ...(brand ? [{ name: 'product:brand', content: brand }] : [])
+      ]
+    }
+  : {}
 
 ---
 
 <!doctype html>
 <html lang="es">
   <head>
+    <SEO
+      title={title}
+      description={description}
+      canonical={url}
+      openGraph={openGraph}
+      twitter={twitter}
+      extend={extend}
+    />
     <meta charset="UTF-8" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-
-    <!-- Basic Meta Tags -->
-    <meta name="description" content={description} />
-    <title>{title}</title>
-
-    <!-- Open Graph Meta Tags for Facebook, WhatsApp, etc. -->
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={absoluteImageUrl} />
-    <meta property="og:url" content={url} />
-    <meta property="og:type" content={type} />
-    <meta property="og:site_name" content={siteName} />
-    <meta property="og:locale" content="es_PE" />
-
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={absoluteImageUrl} />
-
-    <!-- Product-specific Meta Tags (if it's a product) -->
-    {type === 'product' && (
-      <>
-        {price && <meta property="product:price:amount" content={price.toString()} />}
-        <meta property="product:price:currency" content={currency} />
-        <meta property="product:availability" content={availability} />
-        {brand && <meta property="product:brand" content={brand} />}
-      </>
-    )}
-
     <GoogleAnalytics />
   </head>
   <body>

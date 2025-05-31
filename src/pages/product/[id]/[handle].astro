@@ -85,10 +85,17 @@ const getStockStatus = (stock: number) => {
 const stockStatus = getStockStatus(product.stock)
 
 // Prepare metadata for social sharing
+const productImage = product.imagenes?.[0]?.url
+const absoluteProductImage = productImage
+  ? (productImage.startsWith('http') ? productImage : new URL(productImage, Astro.url.origin).href)
+  : new URL('/producto/placehold.png', Astro.url.origin).href
+
 const productMetadata = {
   title: `${product.nombre} | EF SYSTEMAS EIRL`,
-  description: product.descripcion_corta || `${product.nombre} - ${formattedPrice}. ${product.marca?.nombre ? `Marca: ${product.marca.nombre}` : ''} Stock disponible: ${product.stock} unidades.`,
-  image: product.imagenes?.[0]?.url || '/images/placeholder.png',
+  description: product.descripcion_corta
+    ? `${product.descripcion_corta} - ${formattedPrice}. ${product.marca?.nombre ? `Marca: ${product.marca.nombre}. ` : ''}Stock: ${product.stock} unidades disponibles.`
+    : `${product.nombre} - ${formattedPrice}. ${product.marca?.nombre ? `Marca: ${product.marca.nombre}. ` : ''}Encuentra este producto y más en EF SYSTEMAS EIRL. Stock: ${product.stock} unidades.`,
+  image: absoluteProductImage,
   url: Astro.url.href,
   type: 'product' as const,
   price: product.precio,
